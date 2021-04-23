@@ -4,6 +4,15 @@ const text = document.getElementById('itext')
 const button = document.querySelector('button')
 const nickname = document.getElementById('nickname')
 
+text.addEventListener('keypress', event => {
+  if(event.key == "Enter") {
+    let info = {
+      user: nickname.value,
+      message: text.value
+    }
+    socket.emit('message', info)
+  }
+})
 button.addEventListener('click', event => {
   let info = {
     user: nickname.value,
