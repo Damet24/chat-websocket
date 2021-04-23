@@ -3,6 +3,7 @@ const messages = document.getElementById('messages')
 const text = document.getElementById('itext')
 const button = document.querySelector('button')
 const nickname = document.getElementById('nickname')
+text.focus()
 
 text.addEventListener('keypress', event => {
   if(event.key == "Enter") {
@@ -11,6 +12,8 @@ text.addEventListener('keypress', event => {
       message: text.value
     }
     socket.emit('message', info)
+    text.value = ""
+    text.focus()
   }
 })
 button.addEventListener('click', event => {
@@ -19,6 +22,8 @@ button.addEventListener('click', event => {
     message: text.value
   }
   socket.emit('message', info)
+  text.value = ""
+  text.focus()
 })
 
 socket.on('chat', info => {
