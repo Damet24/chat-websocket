@@ -9,11 +9,17 @@ const audio = new Audio('sounds/iphone-notificacion.mp3')
 let onPage = true
 
 button.addEventListener('click', event => {
-  let info = {
-    user: nickname.value,
-    message: text.value
+  if(nickname.value != ""){
+    let info = {
+      user: nickname.value,
+      message: text.value
+    }
+    socket.emit('message', info)
+    messages.scroll(0, messages.scrollHeight)
   }
-  socket.emit('message', info)
+  else {
+    alert("nickname field is required")
+  }
 })
 bdown.addEventListener('click', () => {
   toBottom()
@@ -37,17 +43,32 @@ document.addEventListener('visibilitychange', function(event) {
 })
 
 socket.on('chat', info => {
-  let user = `<div class="u">${info.user ? info.user : 'Anonymous'}</div>`
-  let mss = `<div class="m">${info.message}</div>`
-  messages.innerHTML += `<div class="message">${user} ${mss}</div>`
+  if(info.user === nickname.value){
+    messages.innerHTML += `
+      <div class="alert alert-primary" role="alert">
+        <strong>${info.user}: </strong>${info.message}
+      </div>`
+  }
+  else {
+    messages.innerHTML += `
+      <div class="alert alert-secondary" role="alert">
+        <strong>${info.user}: </strong>${info.message}
+      </div>`
+  }
 
   if(!onPage){
     playSound()
   }
 
-  if(messages.scrollHeight > messages.clientHeight){
-    if(messages.scrollTop >= 0){
-      bdown.style.display = 'block'
+
+  if(info.user === nickname.value){
+    toBottom()
+  }
+  else{
+    if(messages.scrollHeight > messages.clientHeight){
+      if(messages.scrollTop >= 0){
+        bdown.style.display = 'block'
+      }
     }
   }
 })
