@@ -95,3 +95,18 @@
   background-color: #F24405;
   border: 1px solid #D9A91A;
 }
+
+.boton-bajar {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+
+  position: fixed;
+  right: 10px;
+  bottom: 88.467px;
+  display: none;
+}
+
