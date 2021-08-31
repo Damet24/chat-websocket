@@ -1,34 +1,74 @@
 socket = io()
 const messages = document.getElementById('messages')
 const text = document.getElementById('itext')
-const button = document.querySelector('button')
+const button = document.querySelector('#send')
+const bdown = document.querySelector('#buttom-down')
 const nickname = document.getElementById('nickname')
-text.focus()
 
-text.addEventListener('keypress', event => {
-  if(event.key == "Enter") {
+const audio = new Audio('sounds/iphone-notificacion.mp3')
+let onPage = true
+
+button.addEventListener('click', event => {
+  if(nickname.value != ""){
     let info = {
       user: nickname.value,
       message: text.value
     }
     socket.emit('message', info)
-    text.value = ""
-    text.focus()
+    messages.scroll(0, messages.scrollHeight)
+  }
+  else {
+    alert("nickname field is required")
   }
 })
-button.addEventListener('click', event => {
-  let info = {
-    user: nickname.value,
-    message: text.value
+bdown.addEventListener('click', () => {
+  toBottom()
+  bdown.style.display = 'none'
+})
+
+function playSound(){
+  audio.play()
+}
+
+function toBottom(){
+  messages.scroll(0, messages.scrollHeight)
+}
+
+document.addEventListener('visibilitychange', function(event) {
+  if (!document.hidden) {
+    onPage = true
+  } else {
+    onPage = false
   }
-  socket.emit('message', info)
-  text.value = ""
-  text.focus()
 })
 
 socket.on('chat', info => {
-  let user = `<div class="u">${info.user ? info.user : 'Anonymous'}</div>`
-  let mss = `<div class="m">${info.message}</div>`
-  messages.innerHTML += `<div class="message">${user} ${mss}</div>`
-  messages.scroll(0, messages.scrollHeight)
+  if(info.user === nickname.value){
+    messages.innerHTML += `
+      <div class="alert alert-primary" role="alert">
+        <strong>${info.user}: </strong>${info.message}
+      </div>`
+  }
+  else {
+    messages.innerHTML += `
+      <div class="alert alert-secondary" role="alert">
+        <strong>${info.user}: </strong>${info.message}
+      </div>`
+  }
+
+  if(!onPage){
+    playSound()
+  }
+
+
+  if(info.user === nickname.value){
+    toBottom()
+  }
+  else{
+    if(messages.scrollHeight > messages.clientHeight){
+      if(messages.scrollTop >= 0){
+        bdown.style.display = 'block'
+      }
+    }
+  }
 })
