@@ -4,11 +4,20 @@ const text = document.getElementById('itext')
 const button = document.querySelector('#send')
 const bdown = document.querySelector('#buttom-down')
 const nickname = document.getElementById('nickname')
+text.focus()
 
 const audio = new Audio('sounds/iphone-notificacion.mp3')
 let onPage = true
 
-button.addEventListener('click', event => {
+button.addEventListener('click', send)
+text.addEventListener('keydown', (e) => {
+  console.log(e)
+  if(e.key == 'Enter'){
+    send()
+  }
+})
+
+function send(){
   if(nickname.value != ""){
     let info = {
       user: nickname.value,
@@ -16,11 +25,14 @@ button.addEventListener('click', event => {
     }
     socket.emit('message', info)
     messages.scroll(0, messages.scrollHeight)
+    text.value = ""
   }
   else {
     alert("nickname field is required")
   }
-})
+  text.focus()
+}
+
 bdown.addEventListener('click', () => {
   toBottom()
   bdown.style.display = 'none'
